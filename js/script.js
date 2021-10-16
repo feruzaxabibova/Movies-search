@@ -4,13 +4,12 @@ var elSearchTitleInput = $_('.js-search-form__title-input', elSearchForm);
 var elRatingInput = $_('.js-search-form__rating-input', elSearchForm);
 var elGenreSelect = $_('.js-search-form__genre-select', elSearchForm);
 var elSortSelect = $_('.js-search-form__sort-select', elSearchForm);
-
 var elSearchResult = $_('.js-search-results');
 
 var elMovieTemplate = $_('#movie-template').content;
 
 
-var normalizedMovies = movies.map(function(movie){
+var normalizedMovies = movies.map(function (movie) {
     return {
         title: movie.Title.toString(),
         year: movie.movie_year,
@@ -38,7 +37,7 @@ var renderResults = function (elResults, searchRegex) {
         if (searchRegex.source === '(?:)') {
             $_('.movie__title', elMovie).textContent = movie.title;
         } else {
-            $_('.movie__title', elMovie).innerHTML = movie.title.replace(searchRegex, `<mark class="px-0">${movie.title.match(searchRegex)}</mark>`);
+            $_('.movie__title', elMovie).innerHTML = movie.title.replace(searchRegex, `<mark class="bg-warning px-0">${movie.title.match(searchRegex)}</mark>`);
         }
 
         $_('.movie__year', elMovie).textContent = movie.year;
@@ -51,6 +50,26 @@ var renderResults = function (elResults, searchRegex) {
     });
 
     elSearchResult.appendChild(elResultsFragment);
+};
+
+//SORT 
+var sortObjectAZ = function (array) {
+    return array.sort((a, b) => {
+        if (a.title > b.title) {
+            return 1;
+        } else if (a.title < b.title) {
+            return - 1;
+        }
+        return 0;
+    });
+};
+
+var sortSearchResults = (results, sortType) => {
+    if (sortType === "az") {
+        return sortObjectAZ(results);
+    } else if (sortType === "za") {
+        return sortObjectAZ(results).reverse();
+    }
 };
 
 // FIND A NAME
@@ -73,7 +92,10 @@ elSearchForm.addEventListener('submit', (evt) => {
     var movieRegexTitle = new RegExp(movieTitle, 'gi')
     var minimumRating = Number(elRatingInput.value);
     var movieGenres = elGenreSelect.value;
+    var sorting = elSortSelect.value;
+
     var elResults = findMovie(movieRegexTitle, minimumRating, movieGenres);
+    var result = sortSearchResults(elResults, sorting);
 
     renderResults(elResults, movieRegexTitle);
 })
