@@ -18,9 +18,9 @@ var normalizedMovies = movies.map(function (movie) {
         rating: movie.imdb_rating,
         runtime: movie.runtime,
         language: movie.language,
-        link: getYouTubeVideoLink(movie.ytid),
-        youtubeBigImgPoster: getYouTubeBigImgPoster(movie.ytid),
-        youtubeSmallImgPoster: getYouTubeSmallImgPoster(movie.ytid)
+        // link: getYouTubeVideoLink(movie.ytid),
+        // youtubeBigImgPoster: getYouTubeBigImgPoster(movie.ytid),
+        // youtubeSmallImgPoster: getYouTubeSmallImgPoster(movie.ytid)
     }
 });
 
@@ -53,22 +53,53 @@ var renderResults = function (elResults, searchRegex) {
 };
 
 //SORT 
-var sortObjectAZ = function (array) {
-    return array.sort((a, b) => {
+var sortObjectsAZ = function (array) {
+    return array.sort(function (a, b) {
         if (a.title > b.title) {
             return 1;
         } else if (a.title < b.title) {
-            return - 1;
+            return -1;
         }
         return 0;
     });
 };
 
-var sortSearchResults = (results, sortType) => {
-    if (sortType === "az") {
-        return sortObjectAZ(results);
-    } else if (sortType === "za") {
-        return sortObjectAZ(results).reverse();
+var sortObjectsRating = function (array) {
+    return array.sort(function (a, b) {
+        if (a.imdbRating > b.imdbRating) {
+            return -1;
+        } else if (a.imdbRating < b.imdbRating) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
+var sortObjectsYear = function (array) {
+    return array.sort(function (a, b) {
+        if (a.year > b.year) {
+            return -1;
+        } else if (a.year < b.year) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
+var sortSearchResults = function (results, sortType) {
+    // TODO - create sorting function that accepts array of objects and sorting property
+    if (sortType === 'az') {
+        return sortObjectsAZ(results);
+    } else if (sortType === 'za') {
+        return sortObjectsAZ(results).reverse();
+    } else if (sortType === 'rating_desc') {
+        return sortObjectsRating(results)
+    } else if (sortType === 'rating_asc') {
+        return sortObjectsRating(results).reverse();
+    } else if (sortType === 'year_desc') {
+        return sortObjectsYear(results)
+    } else if (sortType === 'year_asc') {
+        return sortObjectsYear(results).reverse();
     }
 };
 
@@ -127,3 +158,4 @@ var createGenreSelectOption = function () {
     elGenreSelect.appendChild(elOptionsFragment);
 };
 createGenreSelectOption();
+
